@@ -42,7 +42,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                     print("[-] Unexpected POST request")
                     
                 fs_up = fs['file'] #Here file is the key to hold the actual file
-                with open('/root/Desktop/1.txt', 'wb') as o: #Create new file and write contents into this file.
+                with open('/root/Desktop/1.png', 'wb') as o: #Create new file and write contents into this file.
                     o.write( fs_up.file.read() )
                     s.send_response(200)
                     s.end_headers()
