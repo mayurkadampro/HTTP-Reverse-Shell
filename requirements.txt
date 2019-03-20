@@ -1,0 +1,4 @@
+request
+pyautogui
+winshell
+pypiwin32
